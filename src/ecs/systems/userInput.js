@@ -1,6 +1,26 @@
+import PubSub from "pubsub-js";
+import { _isOverlapping, _isInViewport } from "../../utils";
+
 // Setup the system
 // --------------------------------------
+let isPaused = false;
 let heroPosition = 0;
+const mySubscriber = function (msg, data) {
+  switch (msg) {
+    case "PAUSE":
+      console.log("pause");
+      isPaused = true;
+      break;
+    case "RESUME":
+      console.log("resume");
+      isPaused = false;
+      break;
+    default:
+      return;
+  }
+};
+const pauseToken = PubSub.subscribe("PAUSE", mySubscriber);
+const resumeToken = PubSub.subscribe("RESUME", mySubscriber);
 
 function handleHeroFireMissile(evt) {}
 
@@ -16,12 +36,17 @@ function handleHeroMoveLeft(evt) {
 
 function handleHeroMoveRight(evt) {
   evt.preventDefault();
+
   // const isCapturing = Alien.getIsCapturing();
   // if (isCaptured) {
   //   return;
   // }
+  const newPosition = heroPosition + 10;
+  // if (heroPosition >= 98) {
+  //   return;
+  // }
   console.log("move right");
-  heroPosition = heroPosition + 3;
+  heroPosition = newPosition;
   // if (newPos >= 98) {
   //   return;
   // }
@@ -36,6 +61,10 @@ function handleHeroMoveRight(evt) {
 }
 
 function handleKeyPress(evt) {
+  console.log("isPaused", isPaused);
+  if (isPaused) {
+    return;
+  }
   console.log("keypress");
   const key = evt.key;
   switch (key.toLowerCase()) {
@@ -73,10 +102,19 @@ UserInput.prototype.update = (entities, params) => {
   // We can change component data based on input, which cause other
   // systems (e.g., rendering) to be affected
   //curEntity.components.appearance.domElement.setAttribute("data-move", "10%");
-  curEntity.components.appearance.domElement.style.setProperty(
-    "--heroDelta",
-    `${heroPosition}%`
+  const isInViewport = _isInViewport(
+    curEntity.components.appearance.domElement,
+    10
   );
+  if (isInViewport) {
+    curEntity.components.appearance.domElement.style.setProperty(
+      "--heroDelta",
+      `${heroPosition}%`
+    );
+    isPaused = false;
+  } else {
+    isPaused = true;
+  }
   console.log("moveit");
   curEntity.components.appearance.domElement.classList.add("hero-move");
   curEntity.components.appearance.domElement.classList.remove("move");

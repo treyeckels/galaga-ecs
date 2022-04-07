@@ -6,7 +6,7 @@ import {
   IS_DIVING_CLASS,
   ALIEN_CLASS,
   IS_FLYING_CLASS,
-  ALIEN_TIME_START
+  ALIEN_TIME_START,
 } from "./constants";
 
 import { _isOverlapping, _isInViewport } from "./utils";
@@ -22,7 +22,7 @@ var aliensOuterContainerEl = screen1El.querySelector("#aliens-container");
 var aliensContainerEl = screen1El.querySelector("#aliens");
 
 const heroElements = Hero.cacheElements({
-  screen1El
+  screen1El,
 });
 
 const heroContainerEl = heroElements.heroContainerEl;
@@ -63,7 +63,7 @@ let isGamePaused = false;
 let sounds = {
   theme: "Galaga_Theme_Song.mp3",
   start: "Galaga_Level_Start_Sound_Effect.mp3",
-  alienIsFlying: "Galaga_Flying_Enemy_Sound_Effect.mp3"
+  alienIsFlying: "Galaga_Flying_Enemy_Sound_Effect.mp3",
 };
 
 const aliensMetaData = Alien.aliensMetaData;
@@ -213,7 +213,7 @@ function handleIntersect(entries) {
 function createObserver() {
   let options = {
     root: Alien.getAliensContainer(),
-    threshold: [0.01]
+    threshold: [0.01],
   };
   observer = new IntersectionObserver(handleIntersect, options);
   Alien.setObserver(observer);
@@ -368,7 +368,7 @@ function handleHeroMoveRight(evt) {
   }
   let newPos;
 
-  newPos = heroPosition + 3;
+  newPos = heroPosition + 10;
   if (newPos >= 98) {
     return;
   }

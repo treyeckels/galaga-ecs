@@ -1,8 +1,10 @@
+import PubSub from "pubsub-js";
 import Entity from "./ecs/Entity";
 import Components from "./ecs/Components";
 import render from "./ecs/systems/render";
 import userInput from "./ecs/systems/userInput";
 import { levels } from "./levels";
+// import "./styles.css";
 
 const ECS = {
   Components: {},
@@ -11,7 +13,7 @@ const ECS = {
   Entities: [],
   game: {},
 
-  score: 0
+  score: 0,
 };
 
 /* =========================================================================
@@ -21,15 +23,29 @@ const ECS = {
  *  Component System
  *
  * ========================================================================= */
-ECS.Game = function Game() {
+const Game = function Game() {
   // This is our "main" function which controls everything. We setup the
   // systems to loop over, setup entities, and setup and kick off the game
   // loop.
   const self = this;
   this.level = 0;
+  this._running = true;
 
   this.heroContainerEl = document.querySelector("#hero-container");
   this.alienContainerEl = document.querySelector("#aliens");
+  this.controlsOpenEl = document.querySelector("#controls-open");
+  this.controlsContainerEl = document.querySelector("#controls");
+  this.controlsOpenContainerEl = document.querySelector(
+    "#controls-open-container"
+  );
+  console.log("container", this.controlsOpenContainerEl);
+  this.controlsPauseEl = document.querySelector("#controls-pause");
+
+  this.controlsOpenEl.addEventListener(
+    "click",
+    this.handleOpenControls.bind(this)
+  );
+  this.controlsPauseEl.addEventListener("click", this.pauseResume.bind(this));
 
   // Create some entities
   // ----------------------------------
@@ -49,13 +65,13 @@ ECS.Game = function Game() {
           domElement: alien,
           parentElement: this.alienContainerEl,
           isFirstElement: i === 0,
-          islastElement: i === num - 1
+          islastElement: i === num - 1,
         })
       );
       entity.addComponent(new Components.ComputerControlled());
       entity.addComponent(
         new Components.Position({
-          isInStartPosition: true
+          isInStartPosition: true,
         })
       );
       entity.addComponent(new Components.Collision());
@@ -88,12 +104,12 @@ ECS.Game = function Game() {
   entity.addComponent(
     new Components.Appearance({
       domElement: document.querySelector("#hero"),
-      parentElement: this.heroContainerEl
+      parentElement: this.heroContainerEl,
     })
   );
   entity.addComponent(
     new Components.Position({
-      isInStartPosition: true
+      isInStartPosition: true,
     })
   );
   entity.addComponent(new Components.PlayerControlled());
@@ -113,43 +129,43 @@ ECS.Game = function Game() {
     // ECS.systems.collision,
     // ECS.systems.decay,
     render,
-    userInput
+    userInput,
   ];
 
   for (let i = 0, len = systems.length; i < len; i++) {
     systems[i].init(ECS.entities, {
       game: self,
-      playerControlled: entity
+      playerControlled: entity,
     });
   }
 
   // Game loop
   // ----------------------------------
-  function gameLoop() {
+  this.gameLoop = function gameLoop() {
     // Simple game loop
     for (var i = 0, len = systems.length; i < len; i++) {
       // Call the system and pass in entities
       // NOTE: One optimal solution would be to only pass in entities
       // that have the relevant components for the system, instead of
       // forcing the system to iterate over all entities
-      systems[i](ECS.entities, {
+      systems[i].update(ECS.entities, {
         game: self,
-        playerControlled: entity
+        playerControlled: entity,
       });
     }
 
     // Run through the systems.
     // continue the loop
     if (self._running !== false) {
-      gameLoop();
+      requestAnimationFrame(self.gameLoop);
     }
-  }
+  };
   // Kick off the game loop
   // for (let i = 0; i < 3; i++) {
   //   gameLoop();
   // }
-  //gameLoop();
-  this._running = true; // is the game going?
+  requestAnimationFrame(this.gameLoop);
+  // this._running = true; // is the game going?
 
   // Lose condition
   // ----------------------------------
@@ -169,5 +185,26 @@ ECS.Game = function Game() {
   return this;
 };
 
+Game.prototype.handleOpenControls = function (evt) {
+  evt.preventDefault();
+  console.log("this", this);
+  this.controlsOpenContainerEl.classList.add("hide");
+  this.controlsContainerEl.classList.remove("hide");
+};
+
+Game.prototype.pauseResume = function () {
+  if (this._running) {
+    PubSub.publish("PAUSE", "");
+    console.log("pause");
+  } else {
+    console.log("resume");
+    PubSub.publish("RESUME", "");
+    requestAnimationFrame(this.gameLoop);
+  }
+  this.controlsPauseEl.querySelector("i").classList.toggle("fa-circle-pause");
+  this.controlsPauseEl.querySelector("i").classList.toggle("fa-circle-play");
+  this._running = !this._running;
+};
+
 // Kick off the game
-ECS.game = new ECS.Game();
+ECS.game = new Game();
