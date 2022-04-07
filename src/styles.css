@@ -1,0 +1,431 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  /* background-color: #000000; */
+  background: radial-gradient(ellipse at top, #1b2735 0%, #090a0f 100%);
+  color: #ffffff;
+  overflow-y: hidden;
+  font-size: 1em;
+}
+
+h1 {
+  font-family: "Bungee Shade", cursive;
+  font-size: 400%;
+  text-align: center;
+}
+
+h2 {
+  font-family: "Bungee Shade", cursive;
+  font-size: 300%;
+  text-align: center;
+}
+
+section {
+  display: block;
+}
+
+button {
+  display: inline-block;
+  padding: 1em 2.2em;
+  border: 0.1em solid #ffffff;
+  margin: 0 0.3em 0.3em 0;
+  border-radius: 0.12em;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+button:hover {
+  color: #000000;
+  background-color: #ffffff;
+}
+
+#app {
+  position: relative;
+  height: 100vh;
+}
+
+#screen-0,
+#screen-2 {
+  text-align: center;
+}
+
+#screen-1 {
+  position: relative;
+  height: 90vh;
+}
+
+#aliens-container {
+  flex: 1;
+  width: 100%;
+  position: relative;
+}
+
+#aliens {
+  display: flex;
+  flex-direction: column;
+  /* flex-wrap: wrap; */
+  /* justify-content: center; */
+  align-items: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  z-index: 3;
+}
+
+#aliens-container .row {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+#boss-container {
+  position: absolute;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  width: 100%;
+}
+
+#boss-container .alien {
+  position: absolute;
+  z-index: 1;
+}
+
+.alien {
+  width: 32px;
+  height: 30px;
+  background-image: url("/src/img/sprite.png");
+  margin: 0 1px;
+  z-index: 3;
+  position: relative;
+}
+
+.bee {
+  background-position: 0 -95px;
+  width: 27px;
+}
+
+.is-flying .bee {
+  background-position: -420px -95px;
+}
+
+#aliens-container .alien.is-diving {
+  animation: dive 2s linear;
+  animation-fill-mode: forwards;
+}
+
+.boss {
+  background-position: 0 0;
+}
+
+#aliens-container .boss.is-diving-and-sticking {
+  animation: dive-and-stick 2s linear;
+  animation-fill-mode: forwards;
+}
+
+.boss.is-capturing {
+  background-position: -416px -32px;
+  position: relative;
+  /* transform: rotate(360deg); */
+  /* transition: transform 1s ease-in-out; */
+}
+
+#capture-cloud {
+  width: 48px;
+  height: 80px;
+  background-image: url("/src/img/galaga-sprites-transparent.png");
+  background-position: -257px -136px;
+  transform: scale(2);
+  top: 250%;
+  left: -5px;
+  position: absolute;
+  opacity: 0;
+  z-index: 1;
+}
+
+.is-captured {
+  animation: capture 1s linear;
+  animation-fill-mode: forwards;
+}
+
+.boss #capture-cloud {
+  opacity: 1;
+  transition: opacity 1s ease-in-out;
+}
+
+.is-flying .boss {
+  background-position: -420px 0;
+}
+
+.is-attached-to-boss {
+  bottom: 0;
+}
+
+.paused {
+  animation-play-state: paused !important;
+}
+
+.is-flying-to-top {
+  animation: fly-to-top 1s linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fly-to-top {
+  from {
+    transform: translate(0, 0);
+  }
+
+  to {
+    transform: translate(0, 0vh);
+  }
+}
+
+.fade {
+  animation: fade 1s linear;
+  animation-fill-mode: forwards;
+}
+
+.hero-move {
+  animation: heroMove 0.01ms linear;
+  animation-fill-mode: forwards;
+  /* left: attr(data-move) !important; */
+}
+
+@keyframes heroMove {
+  from {
+    transform: scale(2) translateX(0);
+  }
+
+  to {
+    transform: scale(2) translateX(var(--heroDelta));
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes capture {
+  from {
+    transform: scale(2) rotate(0deg) translate(0, 0px);
+  }
+
+  50% {
+    transform: scale(2) translate(var(--center), 0px) rotate(360deg);
+  }
+
+  to {
+    transform: scale(2) translate(var(--center), var(--up)) rotate(360deg);
+  }
+}
+
+@keyframes dive {
+  from {
+    transform: rotate(180deg);
+  }
+
+  25% {
+    transform: translate(100%, 25vh) rotate(180deg);
+  }
+
+  50% {
+    transform: translate(-50%, 50vh) rotate(180deg);
+  }
+
+  to {
+    transform: translate(-100%, 100vh) rotate(180deg);
+  }
+}
+
+@keyframes dive-and-stick {
+  from {
+    transform: rotate(180deg);
+  }
+
+  25% {
+    transform: translate(100%, 25vh) rotate(180deg);
+  }
+
+  100% {
+    transform: translate(-50%, 55vh);
+  }
+}
+
+#aliens-hero-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100vh;
+}
+
+#hero-container {
+  height: 30px;
+  padding: 30px;
+  /* position: fixed; */
+
+  width: 98%;
+  border-bottom: 1px solid white;
+  /* z-index: 1; */
+  /* background-color: black; */
+  position: relative;
+  z-index: 2;
+}
+
+#hero {
+  background-image: url("/src/img/galaga-sprites-transparent.png");
+  background-position: -408px -63px;
+  width: 16px;
+  height: 16px;
+  transform: scale(2) translateX(-50%);
+  position: absolute;
+  opacity: 1;
+  transition: opacity ease-in-out 1s;
+  left: calc(50% + 1px);
+  bottom: 10px;
+  z-index: 2;
+}
+
+#hero.crash {
+  opacity: 0;
+}
+
+#crash {
+  opacity: 0;
+  position: absolute;
+  z-index: 5;
+}
+
+#crash.crash {
+  animation: crash 5s;
+  animation-fill-mode: forwards;
+  background-image: url("/src/img/sprite2.png");
+  background-position: -1980px -1px;
+  width: 29px;
+  height: 32px;
+  opacity: 0;
+  transform: scale(2);
+}
+
+@keyframes crash {
+  from {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.hero-missile {
+  background-image: url("/src/img/sprite2.png");
+  width: 10px;
+  height: 13px;
+  background-position: -310px -120px;
+  transform: scale(2);
+  position: absolute;
+  left: 0;
+  bottom: 10%;
+  transition: ease-in-out 100ms;
+  z-index: 0;
+}
+
+#meta {
+  /* position: fixed; */
+  display: flex;
+  justify-content: space-between;
+  bottom: 0;
+  padding: 10px;
+  width: 98%;
+  z-index: 4;
+  /* background-color: black; */
+}
+
+#meta .score {
+  color: yellow;
+}
+
+#meta .player {
+  display: flex;
+  align-items: center;
+}
+
+#meta .life {
+  background-image: url("/src/img/sprite2.png");
+  background-position: -110px -1px;
+  width: 13px;
+  height: 16px;
+}
+
+#meta .lives-left {
+  display: flex;
+  flex: 1;
+  margin: 0 10px;
+}
+
+#interstitial {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  left: 0;
+  top: 0;
+  opacity: 1;
+  transition: opacity 3s ease-in-out;
+}
+
+#screen-1 .hide {
+  display: none;
+}
+
+#interstitial.hide {
+  display: none;
+  opacity: 0;
+}
+
+.hide {
+  display: none;
+}
+
+#controls,
+#controls-open-container {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+}
+
+#controls-open-container {
+  margin: 0;
+}
+
+.controls {
+  width: 50px;
+  height: 50px;
+  padding: 1px;
+  margin-top: 10px;
+}

@@ -1,2 +1,2 @@
-# galaga-ecs
+# galaga
 Created with CodeSandbox

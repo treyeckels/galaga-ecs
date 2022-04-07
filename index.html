@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Galaga</title>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="src/styles.css" />
+    <link rel="stylesheet" href="src/stars.css" />
+    <script
+      src="https://kit.fontawesome.com/3ef788c4cb.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+
+  <body>
+    <div id="stars"></div>
+    <audio
+      id="audio"
+      src="/src/sound/Galaga_Level_Start_Sound_Effect.mp3"
+    ></audio>
+    <div id="app">
+      <main>
+        <section id="screen-0" class="hide">
+          <h1>Galaga</h1>
+          <button id="start-button">Start</button>
+        </section>
+        <section id="screen-1" class="">
+          <div id="controls-open-container" class="">
+            <button id="controls-open" class="controls">
+              <i class="fa-solid fa-gamepad fa-lg"></i>
+            </button>
+          </div>
+          <div id="controls" class="hide">
+            <button id="controls-left" class="controls">
+              <i class="fa-solid fa-angle-left"></i>
+            </button>
+            <button id="controls-fire" class="controls">
+              <i class="fa-solid fa-fire-flame-curved"></i>
+            </button>
+            <button id="controls-right" class="controls">
+              <i class="fa-solid fa-angle-right"></i>
+            </button>
+            <button id="controls-pause" class="controls">
+              <i class="fa-solid fa-circle-pause fa-lg"></i>
+            </button>
+          </div>
+          <div id="hero-missile" class="hide hero-missile"></div>
+          <div id="aliens-hero-container">
+            <div id="aliens-container">
+              <div id="aliens"></div>
+              <div id="boss-container"><div id="capture-cloud"></div></div>
+            </div>
+            <div id="hero-container">
+              <div id="hero"></div>
+              <div id="crash"></div>
+            </div>
+
+            <div id="meta">
+              <div class="player" id="player1">
+                Player 1
+                <div class="lives-left">
+                  <div class="life"></div>
+                  <div class="life"></div>
+                  <div class="life"></div>
+                </div>
+                <span class="score">0</span>
+              </div>
+              <div class="player" id="player2">
+                Player 2
+                <div class="lives-left">
+                  <div class="life"></div>
+                  <div class="life"></div>
+                  <div class="life"></div>
+                </div>
+                <span class="score">0</span>
+              </div>
+            </div>
+          </div>
+          <div id="interstitial" class="hide">
+            <p>You have <span id="num-lives-left"></span> lives left</p>
+          </div>
+        </section>
+        <section id="screen-2" class="hide">
+          <h2>Game Over</h2>
+          <button id="continue-button">Continue</button>
+        </section>
+        <section id="screen-3" class="hide">High Scores</section>
+      </main>
+    </div>
+
+    <!-- <script src="src/index.js"></script> -->
+    <script src="src/game.js"></script>
+  </body>
+</html>
