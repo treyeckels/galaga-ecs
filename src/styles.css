@@ -296,7 +296,7 @@ button:hover {
   position: absolute;
   opacity: 1;
   transition: opacity ease-in-out 1s;
-  left: calc(50% + 1px);
+  left: var(--heroDelta, 50%);
   bottom: 10px;
   z-index: 2;
 }

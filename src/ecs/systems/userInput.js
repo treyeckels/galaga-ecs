@@ -1,10 +1,13 @@
 import PubSub from "pubsub-js";
+import { isMethodDeclaration } from "typescript";
 import { _isOverlapping, _isInViewport } from "../../utils";
 
 // Setup the system
 // --------------------------------------
 let isPaused = false;
-let heroPosition = 0;
+let heroPosition;
+let heroDirection;
+
 const mySubscriber = function (msg, data) {
   switch (msg) {
     case "PAUSE":
@@ -24,29 +27,24 @@ const resumeToken = PubSub.subscribe("RESUME", mySubscriber);
 
 function handleHeroFireMissile(evt) {}
 
-function handleHeroMoveLeft(evt) {
-  evt.preventDefault();
-  // const newPos = heroPosition - 3;
-  // if (newPos <= 1) {
-  //   return;
-  // }
-  // heroEl.style.left = heroPosition - 3 + "%";
-  // heroPosition = newPos;
-}
-
-function handleHeroMoveRight(evt) {
+function handleHeroMoveLeft(evt, game) {
   evt.preventDefault();
 
   // const isCapturing = Alien.getIsCapturing();
   // if (isCaptured) {
   //   return;
   // }
-  const newPosition = heroPosition + 10;
+  const hero = game.heroEl;
+  const newPosition = heroPosition - 10;
   // if (heroPosition >= 98) {
   //   return;
   // }
-  console.log("move right");
-  heroPosition = newPosition;
+  console.log("move left");
+  const isInViewport = _isInViewport(hero, -10);
+  if (isInViewport) {
+    console.log("move right");
+    heroPosition = newPosition;
+  }
   // if (newPos >= 98) {
   //   return;
   // }
@@ -60,7 +58,41 @@ function handleHeroMoveRight(evt) {
   // }
 }
 
-function handleKeyPress(evt) {
+function handleHeroMoveRight(evt, game) {
+  evt.preventDefault();
+  const hero = game.heroEl;
+
+  // const isCapturing = Alien.getIsCapturing();
+  // if (isCaptured) {
+  //   return;
+  // }
+  heroDirection = "right";
+  const newPosition = heroPosition + 10;
+  const isInViewport = _isInViewport(hero, 10);
+
+  if (isInViewport) {
+    console.log("move right");
+    heroPosition = newPosition;
+  }
+
+  // if (heroPosition >= 98) {
+  //   return;
+  // }
+
+  // if (newPos >= 98) {
+  //   return;
+  // }
+  // heroEl.style.left = newPos + "%";
+  // heroPosition = newPos;
+  // if (isCapturing) {
+  //   const isOverlapping = _isOverlapping(heroEl, Alien.getIsCapturingCloud());
+  //   if (isOverlapping) {
+  //     handleCapture();
+  //   }
+  // }
+}
+
+function handleKeyPress(evt, game) {
   console.log("isPaused", isPaused);
   if (isPaused) {
     return;
@@ -70,10 +102,10 @@ function handleKeyPress(evt) {
   switch (key.toLowerCase()) {
     case "arrowright":
       console.log("foo");
-      handleHeroMoveRight(evt);
+      handleHeroMoveRight(evt, game);
       break;
     case "arrowleft":
-      handleHeroMoveLeft(evt);
+      handleHeroMoveLeft(evt, game);
       break;
     case "x":
       handleHeroFireMissile(evt);
@@ -87,9 +119,16 @@ const UserInput = function systemUserInput() {
   this.name = "userInput";
 };
 
-UserInput.prototype.init = () => {
+UserInput.prototype.init = (entities, params) => {
   console.log("user input");
-  document.addEventListener("keydown", handleKeyPress);
+  const game = params.game;
+  const heroEl = game.heroEl;
+  heroPosition = heroEl.getBoundingClientRect().left;
+  console.log("heroPosition", heroPosition);
+
+  document.addEventListener("keydown", function (evt) {
+    handleKeyPress(evt, game);
+  });
 };
 
 UserInput.prototype.update = (entities, params) => {
@@ -97,27 +136,16 @@ UserInput.prototype.update = (entities, params) => {
   // entities. An optimization would be to have some layer which only
   // feeds in relevant entities to the system, but for demo purposes we'll
   // assume all entities are passed in and iterate over them.
+  console.log("userinput update");
   const curEntity = params.playerControlled;
 
   // We can change component data based on input, which cause other
   // systems (e.g., rendering) to be affected
   //curEntity.components.appearance.domElement.setAttribute("data-move", "10%");
-  const isInViewport = _isInViewport(
-    curEntity.components.appearance.domElement,
-    10
+  curEntity.components.appearance.domElement.style.setProperty(
+    "--heroDelta",
+    heroPosition + "px"
   );
-  if (isInViewport) {
-    curEntity.components.appearance.domElement.style.setProperty(
-      "--heroDelta",
-      `${heroPosition}%`
-    );
-    isPaused = false;
-  } else {
-    isPaused = true;
-  }
-  console.log("moveit");
-  curEntity.components.appearance.domElement.classList.add("hero-move");
-  curEntity.components.appearance.domElement.classList.remove("move");
 };
 
 const userInput = new UserInput();

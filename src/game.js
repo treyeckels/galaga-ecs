@@ -32,6 +32,7 @@ const Game = function Game() {
   this._running = true;
 
   this.heroContainerEl = document.querySelector("#hero-container");
+  this.heroEl = document.querySelector("#hero");
   this.alienContainerEl = document.querySelector("#aliens");
   this.controlsOpenEl = document.querySelector("#controls-open");
   this.controlsContainerEl = document.querySelector("#controls");
@@ -144,6 +145,7 @@ const Game = function Game() {
   this.gameLoop = function gameLoop() {
     // Simple game loop
     for (var i = 0, len = systems.length; i < len; i++) {
+      console.log("system update");
       // Call the system and pass in entities
       // NOTE: One optimal solution would be to only pass in entities
       // that have the relevant components for the system, instead of

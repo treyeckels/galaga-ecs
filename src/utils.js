@@ -11,12 +11,25 @@ function _isOverlapping(el1, el2) {
 
 function _isInViewport(ele, step) {
   var rect = ele.getBoundingClientRect();
-  var nextStep = (step / 100) * document.documentElement.clientWidth;
-  return (
+  //var nextStep = (step / 100) * document.documentElement.clientWidth;
+  const nextStep = step;
+  console.log("nextstep", nextStep);
+  console.log("innerwidth", window.innerWidth);
+  if (
     rect.left + nextStep >= 0 &&
     rect.right + nextStep <=
       (window.innerWidth || document.documentElement.clientWidth)
-  );
+  ) {
+    return true;
+  } else if (
+    rect.left + nextStep < 0 &&
+    rect.left + nextStep >=
+      (window.innerWidth || document.documentElement.clientWidth)
+  ) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 export { _isOverlapping, _isInViewport };
