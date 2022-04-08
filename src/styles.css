@@ -288,6 +288,7 @@ button:hover {
 }
 
 /* Hero! */
+/* Will this cause a merge conflict?! */
 #hero {
   background-image: url("/src/img/galaga-sprites-transparent.png");
   background-position: -408px -63px;
