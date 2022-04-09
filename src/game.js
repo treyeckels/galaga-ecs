@@ -3,6 +3,7 @@ import Entity from "./ecs/Entity";
 import Components from "./ecs/Components";
 import render from "./ecs/systems/render";
 import userInput from "./ecs/systems/userInput";
+import computerinput from "./ecs/systems/computerInput";
 import { levels } from "./levels";
 // import "./styles.css";
 
@@ -61,21 +62,26 @@ const Game = function Game() {
       const alien = document.createElement("div");
       alien.classList.add("alien");
       alien.classList.add(key);
-      entity.addComponent(
-        new Components.Appearance({
-          domElement: alien,
-          parentElement: this.alienContainerEl,
-          isFirstElement: i === 0,
-          islastElement: i === num - 1,
-        })
-      );
-      entity.addComponent(new Components.ComputerControlled());
-      entity.addComponent(
-        new Components.Position({
-          isInStartPosition: true,
-        })
-      );
-      entity.addComponent(new Components.Collision());
+      entity
+        .addComponent(
+          new Components.Appearance({
+            domElement: alien,
+            parentElement: this.alienContainerEl,
+            isFirstElement: i === 0,
+            islastElement: i === num - 1,
+          })
+        )
+        .addComponent(
+          new Components.ComputerControlled({
+            isEnemy: true,
+          })
+        )
+        .addComponent(
+          new Components.Position({
+            isInStartPosition: true,
+          })
+        )
+        .addComponent(new Components.Collision());
       entities[entity.id] = entity;
     }
   });
@@ -97,6 +103,28 @@ const Game = function Game() {
   //     entities[entity.id] = entity;
   // }
 
+  // ALIEN container entity
+  let alienContainerEntity = new Entity();
+  alienContainerEntity
+    .addComponent(
+      new Components.Appearance({
+        domElement: this.alienContainerEl,
+        parentElement: this.alienContainerEl.parentElement,
+      })
+    )
+    .addComponent(
+      new Components.Position({
+        isInStartPosition: true,
+        left: window.innerWidth / 2,
+      })
+    )
+    .addComponent(
+      new Components.ComputerControlled({
+        isEnemy: false,
+      })
+    )
+    .addComponent(new Components.Fly());
+  entities[alienContainerEntity.id] = alienContainerEntity;
   // PLAYER entity
   // ----------------------------------
   // Make the last entity the "PC" entity - it must be player controlled,
@@ -131,6 +159,7 @@ const Game = function Game() {
     // ECS.systems.decay,
     render,
     userInput,
+    computerinput,
   ];
 
   for (let i = 0, len = systems.length; i < len; i++) {
@@ -140,10 +169,22 @@ const Game = function Game() {
     });
   }
 
+  let gameTime = new Date().getTime();
+  let time;
+  let gameDuration;
+  let previousTime = new Date().getTime();
+  let frameDuration;
+  let numFrames = 0;
   // Game loop
   // ----------------------------------
   this.gameLoop = function gameLoop() {
+    numFrames++;
     // Simple game loop
+    time = new Date().getTime();
+    gameDuration = (time - gameTime) / 1000;
+    console.log("game Duration", gameDuration);
+    frameDuration = (time - previousTime) / 1000;
+    previousTime = time;
     for (var i = 0, len = systems.length; i < len; i++) {
       console.log("system update");
       // Call the system and pass in entities
@@ -153,6 +194,9 @@ const Game = function Game() {
       systems[i].update(ECS.entities, {
         game: self,
         playerControlled: entity,
+        gameDuration,
+        frameDuration,
+        numFrames,
       });
     }
 

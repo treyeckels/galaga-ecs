@@ -39,11 +39,29 @@ Components.Health.prototype.name = "health";
 Components.Position = function ComponentPosition(params) {
   params = params || {};
   this.isInStartPosition = params.isInStartPosition || false;
-  this.position = [0, 0];
+  this.pos = {
+    left: params.left != null ? params.left : 0,
+    top: 0,
+  };
+  this.velocity = 0.1;
+  this.frameCycleDuration = 0;
+  this.direction = params.direction || "right";
 
   return this;
 };
 Components.Position.prototype.name = "position";
+
+// Flying
+// --------------------------------------
+Components.Fly = function ComponentPosition(params) {
+  params = params || {};
+  this.timeInFlight = 0;
+  this.timeOutOfFlight = 0;
+  this.isFlying = false;
+
+  return this;
+};
+Components.Fly.prototype.name = "fly";
 
 // playerControlled
 // --------------------------------------
@@ -55,8 +73,9 @@ Components.PlayerControlled.prototype.name = "playerControlled";
 
 // computerControlled
 // --------------------------------------
-Components.ComputerControlled = function ComponentPlayerControlled(params) {
+Components.ComputerControlled = function ComponentComputerControlled(params) {
   this.cc = true;
+  this.isEnemey = params.isEnemey !== null ? params.isEnemy : true;
   return this;
 };
 Components.ComputerControlled.prototype.name = "computerControlled";
