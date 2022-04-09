@@ -138,14 +138,15 @@ UserInput.prototype.update = (entities, params) => {
   // assume all entities are passed in and iterate over them.
   console.log("userinput update");
   const curEntity = params.playerControlled;
+  curEntity.components.position.pos.left = heroPosition;
 
   // We can change component data based on input, which cause other
   // systems (e.g., rendering) to be affected
   //curEntity.components.appearance.domElement.setAttribute("data-move", "10%");
-  curEntity.components.appearance.domElement.style.setProperty(
-    "--heroDelta",
-    heroPosition + "px"
-  );
+  // curEntity.components.appearance.domElement.style.setProperty(
+  //   "--heroDelta",
+  //   heroPosition + "px"
+  // );
 };
 
 const userInput = new UserInput();

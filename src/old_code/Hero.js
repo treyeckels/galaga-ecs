@@ -10,15 +10,14 @@ class Hero extends Character {
   }
 
   static cacheElements(gameElements) {
-    const heroContainerEl = gameElements.screen1El.querySelector(
-      "#hero-container"
-    );
+    const heroContainerEl =
+      gameElements.screen1El.querySelector("#hero-container");
 
     return {
       heroContainerEl,
       heroEl: heroContainerEl.querySelector("#hero"),
       crashEl: heroContainerEl.querySelector("#crash"),
-      heroMissileEl: gameElements.screen1El.querySelector("#hero-missile")
+      heroMissileEl: gameElements.screen1El.querySelector("#hero-missile"),
     };
   }
 

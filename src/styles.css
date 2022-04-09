@@ -77,7 +77,7 @@ button:hover {
   /* justify-content: center; */
   align-items: center;
   position: absolute;
-  left: 50%;
+  left: var(--heroDelta, 50%);
   transform: translateX(-50%);
   width: auto;
   z-index: 3;

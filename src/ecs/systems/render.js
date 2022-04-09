@@ -44,11 +44,11 @@ Render.prototype.init = (entities, params) => {
           game.heroContainerEl.getBoundingClientRect().width) *
           100 +
           2,
-        0
+        0,
       ];
     } else if (
-      curEntity.components.position &&
       curEntity.components.computerControlled &&
+      curEntity.components.computerControlled.isEnemey &&
       curEntity.components.position.isInStartPosition &&
       curEntity.components.appearance
     ) {
@@ -66,7 +66,40 @@ Render.prototype.init = (entities, params) => {
   }
 };
 
-Render.prototype.update = (entities, params) => {};
+Render.prototype.update = (entities, params) => {
+  const gameDuration = params.gameDuration;
+  for (let entityId in entities) {
+    const curEntity = entities[entityId];
+    const velocity = curEntity.components.position.velocity;
+    const domEle = curEntity.components.appearance.domElement;
+    const frameCycleDuration = curEntity.components.position.frameCycleDuration;
+    if (curEntity.components.fly) {
+      if (curEntity.components.fly.timeInFlight >= 1) {
+        domEle.classList.add("is-flying");
+      } else {
+        domEle.classList.remove("is-flying");
+      }
+    }
+
+    if (
+      curEntity.components.playerControlled &&
+      curEntity.components.position
+    ) {
+      curEntity.components.appearance.domElement.style.setProperty(
+        "--heroDelta",
+        curEntity.components.position.pos.left + "px"
+      );
+    } else if (
+      curEntity.components.computerControlled &&
+      curEntity.components.position
+    ) {
+      curEntity.components.appearance.domElement.style.setProperty(
+        "--heroDelta",
+        curEntity.components.position.pos.left + "px"
+      );
+    }
+  }
+};
 
 const render = new Render();
 
