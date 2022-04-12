@@ -63,6 +63,16 @@ Components.Fly = function ComponentPosition(params) {
 };
 Components.Fly.prototype.name = "fly";
 
+// Flying
+// --------------------------------------
+Components.Dive = function ComponentPosition(params) {
+  params = params || {};
+  this.isDiving = false;
+
+  return this;
+};
+Components.Dive.prototype.name = "dive";
+
 // playerControlled
 // --------------------------------------
 Components.PlayerControlled = function ComponentPlayerControlled(params) {

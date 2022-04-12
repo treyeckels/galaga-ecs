@@ -34,8 +34,7 @@ ComputerInput.prototype.update = (entities, params) => {
     if (
       curEntity.components.computerControlled &&
       !curEntity.components.computerControlled.isEnemy &&
-      curEntity.components.position &&
-      params.gameDuration > 2
+      curEntity.components.position
     ) {
       let stepConstant = 10;
       if (curEntity.components.position.direction === "left") {
@@ -67,7 +66,44 @@ ComputerInput.prototype.update = (entities, params) => {
     }
 
     if (curEntity.components.fly) {
-      curEntity.components.fly.timeInFlight += params.frameDuration;
+      if (
+        curEntity.components.fly.isFlying &&
+        curEntity.components.fly.timeInFlight >= 0.75
+      ) {
+        curEntity.components.fly.isFlying = false;
+        curEntity.components.fly.timeInFlight = 0;
+        curEntity.components.fly.timeOutOfFlight = 0;
+      } else if (
+        curEntity.components.fly.isFlying &&
+        curEntity.components.fly.timeInFlight < 0.75
+      ) {
+        curEntity.components.fly.timeInFlight += params.frameDuration;
+      } else if (
+        !curEntity.components.fly.isFlying &&
+        curEntity.components.fly.timeOutOfFlight >= 0.75
+      ) {
+        curEntity.components.fly.isFlying = true;
+        curEntity.components.fly.timeInFlight = 0;
+        curEntity.components.fly.timeOutOfFlight = 0;
+      } else if (
+        !curEntity.components.fly.isFlying &&
+        curEntity.components.fly.timeOutOfFlight < 0.75
+      ) {
+        console.log("frameduration", params.frameDuration);
+        curEntity.components.fly.timeOutOfFlight += params.frameDuration;
+      }
+    }
+
+    if (
+      curEntity.components.dive &&
+      !curEntity.components.dive.isDiving &&
+      params.gameDuration > 4
+    ) {
+      const d = Math.floor(Math.random() * 1000);
+      console.log("random num", d);
+      if (d < 1) {
+        curEntity.components.dive.isDiving = true;
+      }
     }
   }
 };

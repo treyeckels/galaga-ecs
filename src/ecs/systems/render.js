@@ -1,3 +1,5 @@
+import PubSub from "pubsub-js";
+
 /* =========================================================================
  *
  * render.js
@@ -13,8 +15,24 @@ const Render = function systemRender() {
   this.name = "render";
 };
 
-Render.prototype.init = (entities, params) => {
+Render.prototype.init = function (entities, params) {
   console.log("render");
+  const self = this;
+  const mySubscriber = function (msg, entities) {
+    switch (msg) {
+      case "PAUSE":
+        self.handlePause(entities);
+        break;
+      case "RESUME":
+        console.log("resume", entities);
+        self.handleResume(entities);
+        break;
+      default:
+        return;
+    }
+  };
+  const pauseToken = PubSub.subscribe("PAUSE", mySubscriber);
+  const resumeToken = PubSub.subscribe("RESUME", mySubscriber);
   // Here, we've implemented systems as functions which take in an array of
   // entities. An optimization would be to have some layer which only
   // feeds in relevant entities to the system, but for demo purposes we'll
@@ -42,8 +60,7 @@ Render.prototype.init = (entities, params) => {
         (curEntity.components.appearance.domElement.getBoundingClientRect()
           .left /
           game.heroContainerEl.getBoundingClientRect().width) *
-          100 +
-          2,
+          100,
         0,
       ];
     } else if (
@@ -74,10 +91,16 @@ Render.prototype.update = (entities, params) => {
     const domEle = curEntity.components.appearance.domElement;
     const frameCycleDuration = curEntity.components.position.frameCycleDuration;
     if (curEntity.components.fly) {
-      if (curEntity.components.fly.timeInFlight >= 1) {
+      if (curEntity.components.fly.isFlying) {
         domEle.classList.add("is-flying");
       } else {
         domEle.classList.remove("is-flying");
+      }
+    }
+
+    if (curEntity.components.dive) {
+      if (curEntity.components.dive.isDiving) {
+        curEntity.components.appearance.domElement.classList.add("is-diving");
       }
     }
 
@@ -97,6 +120,30 @@ Render.prototype.update = (entities, params) => {
         "--heroDelta",
         curEntity.components.position.pos.left + "px"
       );
+    }
+  }
+};
+
+Render.prototype.handlePause = (entities) => {
+  for (let entityId in entities) {
+    const curEntity = entities[entityId];
+    if (
+      curEntity.components.appearance &&
+      curEntity.components.dive &&
+      curEntity.components.dive.isDiving
+    ) {
+      curEntity.components.appearance.domElement.classList.add("is-paused");
+    }
+  }
+};
+
+Render.prototype.handleResume = (entities) => {
+  window.alert("curentity", "curEntity");
+  console.log("entities", entities);
+  for (let entityId in entities) {
+    const curEntity = entities[entityId];
+    if (curEntity.components.appearance) {
+      curEntity.components.appearance.domElement.classList.remove("is-paused");
     }
   }
 };
